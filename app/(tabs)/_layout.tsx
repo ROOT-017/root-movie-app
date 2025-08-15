@@ -14,7 +14,7 @@ const TabIcon = (props: TabIconProps): any => {
     return (
       <ImageBackground
         source={images.highlight}
-        className="flex flex-row w-full flex-1 min-w-[114px] min-h-14 mt-4 justify-center  items-center rounded-lg overflow-hidden "
+        className="flex flex-row w-full flex-1 min-w-[114px] min-h-14 mt-4 justify-center  items-center rounded-full overflow-hidden "
       >
         <Image source={props.icon} tintColor={"#151312"} className="size-5 " />
         <Text className="font-semibold text-base text-secondary ml-2">
@@ -24,17 +24,12 @@ const TabIcon = (props: TabIconProps): any => {
     );
   } else {
     return (
-      <View className="size-full justify-center items-center mt-4 rounded-full">
-        <ImageBackground> 
-          <Image
-            source={props.icon}
-            className="size-5"
-            style={{ tintColor: "#A8B5DB" }}
-          />
-          <Text className="font-semibold text-base text-secondary ml-2">
-            {props.title}
-          </Text>
-        </ImageBackground>
+      <View className="size-full  justify-center items-center mt-4 rounded-full">
+        <Image
+          source={props.icon}
+          className="size-5"
+          style={{ tintColor: "#A8B5DB" }}
+        />
       </View>
     );
   }
@@ -52,8 +47,14 @@ const _layout = () => {
         },
         tabBarStyle: {
           backgroundColor: "#0f0d23",
-          marginHorizontal: 20,
-          // borderRadius: 50,
+          marginHorizontal: 10,
+          borderRadius: 50,
+          height: 52,
+          position: "absolute",
+          marginBottom: 36,
+          overflow: "hidden",
+          borderWidth: 1,
+          borderColor: "#0F0D23",
         },
       }}
     >
@@ -62,6 +63,7 @@ const _layout = () => {
         options={{
           title: "Home",
           headerShown: false,
+
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.home} title={"Home"} />
           ),
@@ -71,7 +73,7 @@ const _layout = () => {
         name="search"
         options={{
           title: "Search",
-          // headerShown: false,
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.search} title={"Search"} />
           ),
