@@ -11,7 +11,12 @@ const client = new Client()
   .setProject(PROJECT_ID);
 
 const database = new Databases(client);
-export const updateSearchCount = async (query: string, movie: Movie) => {
+export const updateSearchCount = async (
+  query: string,
+  movie: Movie & {
+    genres?: string;
+  }
+) => {
   try {
     const results = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.equal("searchTerm", query),
@@ -26,8 +31,6 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
         exitingMovie.$id,
         {
           count: updatedCount,
-          // movieId: movie.id,
-          // query: query.trim(),
         }
       );
     } else {
@@ -37,6 +40,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
         movie_id: movie.id,
         poster_url: CreateImageUri(movie.poster_path),
         title: movie.title,
+        genres: movie.genres,
       });
     }
   } catch (err) {
@@ -44,4 +48,21 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
     throw err;
   }
   //   console.log("Search results:", results);
+};
+
+export const getTrendingMovies = async (): Promise<
+  TrendingMovie[] | undefined
+> => {
+  try {
+    const results = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+      Query.limit(5),
+      Query.orderDesc("count"),
+    ]);
+    return results.documents as unknown as TrendingMovie[];
+  } catch (error) {
+    console.error("Error fetching trending movies:", error);
+    // throw error;
+
+    return undefined;
+  }
 };

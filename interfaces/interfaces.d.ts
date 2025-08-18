@@ -21,6 +21,7 @@ interface TrendingMovie {
   title: string;
   count: number;
   poster_url: string;
+  genres?: string;
 }
 
 interface MovieDetails {
@@ -74,4 +75,9 @@ interface MovieDetails {
 interface TrendingCardProps {
   movie: TrendingMovie;
   index: number;
+}
+
+interface Genres {
+  id: number;
+  name: string;
 }

@@ -2,13 +2,25 @@ import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/searchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { fetchMovies } from "@/services/api";
+import { fetchMovies, getGenres } from "@/services/api";
 import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import { useStorage } from "@/services/useStorage";
+import { CreateGenreListFromMovies } from "@/utils/index.utils";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 const Search = () => {
+  const { item: genreList } = useStorage("genre", getGenres);
+  const ref = useRef<TextInput | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   // const router = useRouter();
   const {
@@ -24,9 +36,6 @@ const Search = () => {
     const timerId = setTimeout(async () => {
       if (searchQuery.trim()) {
         await loadMovies();
-        if (movies && movies?.length > 0 && movies?.[0]) {
-          await updateSearchCount(searchQuery, movies[0]);
-        }
       } else {
         reset();
       }
@@ -36,11 +45,30 @@ const Search = () => {
     //eslint-disable-next-line
   }, [searchQuery]);
 
+  useEffect(() => {
+    const func = async () => {
+      if (movies && movies?.length > 0 && movies?.[0]) {
+        const genres = CreateGenreListFromMovies(genreList ?? [], movies[0]);
+        await updateSearchCount(searchQuery, {
+          ...movies[0],
+          genres: JSON.stringify(genres),
+        });
+      }
+    };
+    func();
+  }, [movies, searchQuery, genreList]);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, []);
+
   return (
     <View className="flex-1 bg-primary ">
       <Image
         source={images.bg}
-        className="flex-1 absolute w-full z-0"
+        className="flex-1 absolute w-full  z-0"
         resizeMode="cover"
       />
       <FlatList
@@ -67,6 +95,7 @@ const Search = () => {
               placeholder={"Search for a movie..."}
               value={searchQuery}
               onChangeText={setSearchQuery}
+              ref={ref}
             />
             {loading && (
               <ActivityIndicator
@@ -87,7 +116,7 @@ const Search = () => {
             movies?.length > 0 ? (
               <View className="flex-1 mt-5">
                 <Text className="text-white text-xl font-bold">
-                  Search Results for{" "}
+                  Search Results for
                   <Text className="text-accent">{searchQuery}</Text>
                 </Text>
                 <Text className="text-xl text-white font-semibold">
