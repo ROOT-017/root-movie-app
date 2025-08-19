@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ROOT MOVIES",
-    "slug": "root-movie-app",
+    "slug": "root-movies",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cd501a7d-70c6-4271-bf40-7bc100de5b4b"
+      }
+    },
+    "owner": "ngwen"
   }
 }

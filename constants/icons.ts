@@ -6,6 +6,11 @@ import save from "@/assets/icons/save.png";
 import star from "@/assets/icons/star.png";
 import play from "@/assets/icons/play.png";
 import arrow from "@/assets/icons/arrow.png";
+import growth from'@/assets/icons/growth.png';
+import bookmark from "@/assets/icons/bookmark.png";
+import bookmarked from "@/assets/icons/bookmarked.png";
+
+
 
 export const icons = {
   home,
@@ -16,4 +21,7 @@ export const icons = {
   star,
   play,
   arrow,
+  growth,
+  bookmark,
+  bookmarked,
 };

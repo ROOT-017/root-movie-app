@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Storage from "react-native-storage";
 
-export const useStorage = <T>(key: string, func: () => Promise<T>) => {
+export const useStorage = <T>(key: string, func?: () => Promise<T>) => {
   const [item, setItem] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -17,36 +17,6 @@ export const useStorage = <T>(key: string, func: () => Promise<T>) => {
       }),
     []
   );
-
-  // Wrap functions in useCallback to maintain stable references
-  const getItem = useCallback(
-    async (forceRefresh = false): Promise<T | null> => {
-      try {
-        setLoading(true);
-
-        if (!forceRefresh) {
-          try {
-            const cachedData = await storage.load({ key });
-            setItem(cachedData);
-            return cachedData;
-          } catch (cacheError) {
-            // Cache miss is expected, proceed to fetch fresh data
-          }
-        }
-
-        const freshData = await func();
-        await setItemInStorage(freshData);
-        return freshData;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error(String(err)));
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [key, func, storage]
-  );
-
   const setItemInStorage = useCallback(
     async (value: T) => {
       try {
@@ -61,6 +31,37 @@ export const useStorage = <T>(key: string, func: () => Promise<T>) => {
       }
     },
     [key, storage]
+  );
+  // Wrap functions in useCallback to maintain stable references
+  const getItem = useCallback(
+    async (forceRefresh = false): Promise<T | null> => {
+      try {
+        setLoading(true);
+
+        if (!forceRefresh) {
+          try {
+            const cachedData = await storage.load({ key });
+            setItem(cachedData);
+            return cachedData;
+          } catch (cacheError) {
+            console.log("Cache error:", cacheError);
+
+            // Cache miss is expected, proceed to fetch fresh data
+          }
+        }
+
+        if (!func) return null;
+        const freshData = await func?.();
+        await setItemInStorage(freshData);
+        return freshData;
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [key, func, storage, setItemInStorage]
   );
 
   const removeItem = useCallback(async () => {

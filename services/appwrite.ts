@@ -58,7 +58,14 @@ export const getTrendingMovies = async (): Promise<
       Query.limit(5),
       Query.orderDesc("count"),
     ]);
-    return results.documents as unknown as TrendingMovie[];
+    return [
+      ...new Map(
+        (results.documents as unknown as TrendingMovie[]).map((item) => [
+          item.movie_id,
+          item,
+        ])
+      ).values(),
+    ];
   } catch (error) {
     console.error("Error fetching trending movies:", error);
     // throw error;

@@ -15,7 +15,7 @@ export const fetchMovies = async ({
   query: string;
 }): Promise<Movie[]> => {
   const endpoint = query
-    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=false&include_video=false&language=en-US&page=1`
+    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`
     : `${TMDB_CONFIG.BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1`;
 
   const response = await fetch(`${endpoint}`, {
@@ -68,6 +68,22 @@ export const getGenres = async (): Promise<Genres[]> => {
     return data.genres;
   } catch (err) {
     console.error("Error fetching genres:", err);
+    throw err;
+  }
+};
+
+export const fetchMoviesByIds = async (ids: number[]): Promise<Movie[]> => {
+  try {
+    return await Promise.all(
+      ids.map((id) =>
+        fetch(`${TMDB_CONFIG.BASE_URL}/movie/${id}`, {
+          method: "GET",
+          headers: TMDB_CONFIG.headers,
+        }).then(async (res) => await res.json())
+      )
+    );
+  } catch (err) {
+    console.error("Error fetching movies by ids:", err);
     throw err;
   }
 };

@@ -41,7 +41,16 @@ const TrendingCard = ({
         </Text>
         {genres && (
           <View className="">
-            <Text className="text-white" numberOfLines={1}>{Array.from(JSON.parse(genres)).join(", ")}</Text>
+            <Text className="text-white" numberOfLines={1}>
+              {Array.from(JSON.parse(genres)).map((item, index) => (
+                <Text key={item as string} className="text-white">
+                  {item as string}{" "}
+                  {index < Array.from(JSON.parse(genres)).length - 1 ? (
+                    <Text>&#8226; </Text>
+                  ) : null}
+                </Text>
+              ))}
+            </Text>
           </View>
         )}
       </TouchableOpacity>
